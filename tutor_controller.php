@@ -2,7 +2,6 @@
 	include_once("db_con.php");
 	include_once("tutor.php");
 	include_once("tutor_timeslot.php");
-	include_once("tutor_list.php");
 	
 	function get_tutor_by_id($tutor_id)
 	{
