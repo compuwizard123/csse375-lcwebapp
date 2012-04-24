@@ -98,7 +98,6 @@
 	function get_tutor_booked($tutor_id, $date)
 	{
 		$mysqli = getDBCon();
-		//$date = date('Y-m-d');
 		$result = $mysqli->query("SELECT tutor.TID, tutor.Name, timeslot.TSID, booked_timeslots.tutee_uname, booked_timeslots.booked_day FROM timeslot INNER JOIN (tutor INNER JOIN booked_timeslots ON (tutor.TID=booked_timeslots.TID)) ON (timeslot.TSID=booked_timeslots.TSID) WHERE tutor.TID='" . $tutor_id ."' AND booked_timeslots.booked_day='" . $date . "'");
 		unset($mysqli);
 		return $result->fetch_all(MYSQLI_ASSOC);
