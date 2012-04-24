@@ -8,12 +8,12 @@
 	
 	switch($_SERVER['REQUEST_URI'])
 	{			
-		case "get_tutor_by_id":
+		case "/rest/get_tutor_by_id":
 			$tutor_obj = get_tutor_by_id($args['LCTutorID']);
 			echo(encode_json($tutor_obj));
 			break;
 			
-		case "get_tutors_by_name":
+		case "/rest/get_tutors_by_name":
 			$tutors = get_tutors_by_name($args["LCTutorName"]);
 			echo(json_encode($tutors));
 			break;
@@ -39,13 +39,10 @@
 			break;
 			
 		case "/rest/authenticate":
-			require_once('Sanitize.php');
-			$sanitize = new Sanitize;
-
 			$ldaphost = "ldap://dc-1.rose-hulman.edu";
 			$ldapport = 636;
 			$domain = "rose-hulman.edu";
-			$user = $sanitize->paranoid($args['username']);
+			$user = $args['username'];
 			$password = $args['password'];
 
 			$ldapconn = ldap_connect($ldaphost, $ldapport);
