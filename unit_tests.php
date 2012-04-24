@@ -47,7 +47,7 @@ class TestOfRest extends UnitTestCase {
 		
 		$expected = (object) array("TID"=>"3","name"=>"Ian Cundiff","year"=>"2013","email"=>"cundifj@rose-hulman.edu","major"=>"SE","schedule_sid"=>null,"image_url"=>"http://lcwebapp.csse.rose-hulman.edu/TutorProfilePics/tutor-pic-3.jpg");
 		
-		$this->assertEqual($result[0], $expected);
+		$this->assertEqual($result, $expected);
     }
 	
 	function testGetTutorSchedule() {

@@ -9,33 +9,27 @@
 	switch($_SERVER['REQUEST_URI'])
 	{			
 		case "/rest/get_tutor_by_id":
-			$tutor_obj = get_tutor_by_id($args['LCTutorID']);
-			echo(encode_json($tutor_obj));
+			$result = get_tutor_by_id($args['LCTutorID']);
 			break;
 			
 		case "/rest/get_tutors_by_name":
-			$tutors = get_tutors_by_name($args["LCTutorName"]);
-			echo(json_encode($tutors));
+			$result = get_tutors_by_name($args["LCTutorName"]);
 			break;
 			
 		case "/rest/get_tutors_by_course":
-			$tutors = get_tutors_by_course($args["LCCourse"]);
-			echo(json_encode($tutors));
+			$result = get_tutors_by_course($args["LCCourse"]);
 			break; 
 			
 		case "/rest/get_tutor_schedule":
-			$timeslots = get_tutor_schedule($args['LCTutorID'], $args['LCTimestamp']);
-			echo(json_encode($timeslots));
+			$result = get_tutor_schedule($args['LCTutorID'], $args['LCTimestamp']);
 			break;
 			
 		case "/rest/get_tutor_booked":
-			$timeslots = get_tutor_booked($args['LCTutorID'], $args['LCTimestamp']);
-			echo(json_encode($timeslots));
+			$result = get_tutor_booked($args['LCTutorID'], $args['LCTimestamp']);
 			break;
 			
 		case "/rest/get_tutor_courses_tutored":
-			$courses = get_tutor_courses_tutored($args['LCTutorID']);
-			echo(json_encode($courses));
+			$result = get_tutor_courses_tutored($args['LCTutorID']);
 			break;
 			
 		case "/rest/authenticate":
@@ -45,25 +39,23 @@
 			$user = $args['username'];
 			$password = $args['password'];
 
+			$result = false;
+			
 			$ldapconn = ldap_connect($ldaphost, $ldapport);
-			if(!$ldapconn) {
-				echo(json_encode(false));
-				break;
-			}
+			if(!$ldapconn) break;
+			
 			ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3);
 			ldap_set_option($ldapconn, LDAP_OPT_REFERRALS, 0);
-			if($user == "" || $password == "") {
-				echo(json_encode(false));
-				break;
-			}
+			
+			if($user == "" || $password == "") break;
+			
 			$bind = @ldap_bind($ldapconn, "{$user}@{$domain}", $password);
 
 			if ($bind) {
-				echo(json_encode(true));
+				$result = true;
 				ldap_unbind($ldapconn);
-			} else {
-				echo(json_encode(false));
 			}
 			break;
 	}
+	echo(json_encode($result));
 ?>
