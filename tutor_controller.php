@@ -30,7 +30,6 @@
 	{
 		$mysqli = getDBCon();
 		$result = $mysqli->query("SELECT tutor.TID, tutor.name, tutor.year, tutor.email, tutor.major, tutor_images.image_url FROM tutor INNER JOIN tutor_images ON ( tutor.TID = tutor_images.TID ) WHERE tutor.name LIKE '" . $name . "%' ORDER BY tutor.name");
-		//$tutor_list = new TutorList();
 		$results_array = array();
 		while($result_obj = $result->fetch_object("tutor"))
 		{
