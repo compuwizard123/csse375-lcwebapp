@@ -1,6 +1,5 @@
 <?php
-	function getDBCon()
-	{
+	function getDBCon() {
 		$host = "localhost:3306";
 		$username = "root";
 		$password = "LearningCenter";
