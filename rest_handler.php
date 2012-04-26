@@ -24,12 +24,16 @@
 			$result = get_tutor_schedule($args['LCTutorID'], $args['LCTimestamp']);
 			break;
 			
-		case "get_tutor_booked":
-			$result = get_tutor_booked($args['LCTutorID'], $args['LCTimestamp']);
+		case "get_tutor_booked_timeslots":
+			$result = get_tutor_booked_timeslots($args['LCTutorUname'], $args['LCDate']);
 			break;
 			
 		case "get_tutor_courses_tutored":
 			$result = get_tutor_courses_tutored($args['LCTutorID']);
+			break;
+			
+		case "book_timeslot":
+			$result = book_timeslot($args['LCTutorID'], $args['LCTuteeUname'],$args['LCTimeslotID'],$args['LCDate']);
 			break;
 			
 		case "authenticate":

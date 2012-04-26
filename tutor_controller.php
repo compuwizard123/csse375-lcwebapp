@@ -12,6 +12,8 @@
 		return $tutor_object;
 	}
 	
+	
+	
 	function get_tutors_by_course($course)
 	{
 		$mysqli = getDBCon();
@@ -63,7 +65,7 @@
 		unset($mysqli);
 		return $results_array;
 	}
-	
+	//TODO: rewrite
 	function get_tutor_schedule($tutor_id, $timestamp)
 	{
 		$day = date("l", $timestamp);
@@ -82,6 +84,7 @@
 		return $result->fetch_all(MYSQLI_ASSOC);
 	}
 	
+	//TODO: rewrite
 	function get_tutor_timeslots($tutor_id, $day)
 	{
 		$mysqli = getDBCon();
@@ -95,14 +98,33 @@
 		return $results_array;
 	}
 	
-	function get_tutor_booked($tutor_id, $date)
+	
+	function get_tutor_booked_timeslots($tutor_uname, $date)
 	{
 		$mysqli = getDBCon();
-		$result = $mysqli->query("SELECT tutor.TID, tutor.Name, timeslot.TSID, booked_timeslots.tutee_uname, booked_timeslots.booked_day FROM timeslot INNER JOIN (tutor INNER JOIN booked_timeslots ON (tutor.TID=booked_timeslots.TID)) ON (timeslot.TSID=booked_timeslots.TSID) WHERE tutor.TID='" . $tutor_id ."' AND booked_timeslots.booked_day='" . $date . "'");
+		$result = $mysqli->query("SELECT booked_timeslots.TSID, booked_timeslots.tutee_uname FROM booked_timeslots,tutor WHERE tutor.email='" . $tutor_uname ."' AND booked_timeslots.booked_day='" . $date . "'");
+		
 		unset($mysqli);
 		return $result->fetch_all(MYSQLI_ASSOC);
 	}
 	
+	function book_timeslot($tutor_id, $tutee_uname, $timeslot_id,$date)
+	{
+		$mysqli = getDBCon();
+		
+		
+		$result = $mysqli->query("INSERT INTO booked_timeslots (TID,TSID, tutee_uname, booked_day) VALUES ('". $tutor_id ."' , '". $timeslot_id ."' , '". $tutee_uname ."', '". $date ."')");
+		
+		unset($mysqli);
+		//return $result->fetch_all(MYSQLI_ASSOC);
+		return $tutorID[0];
+		
+		
+		
+	}
+	
+	
+	//TODO: rewrite?
 	function merge_timeslots(&$tutor_scheduled_timeslots, $tutor_booked_timeslots)
 	{
 		foreach($tutor_booked_timeslots as $booking)
