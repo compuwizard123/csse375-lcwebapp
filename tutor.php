@@ -5,10 +5,9 @@
 		public $TID;
 		public $name;
 		public $year;
-		public $email;
 		public $major;
-		public $schedule_sid;
-		public $image_url;
+		public $Room_Number;
+		public $about_tutor;
 		
 		function set_tutor_image($image_url)
 		{

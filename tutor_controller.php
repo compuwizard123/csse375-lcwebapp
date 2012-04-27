@@ -6,7 +6,7 @@
 	function get_tutor_by_id($tutor_id)
 	{
 		$mysqli = getDBCon();
-		$result = $mysqli->query("SELECT tutor.TID, tutor.name, tutor.year, tutor.email, tutor.major, tutor_images.image_url FROM tutor INNER JOIN tutor_images ON (tutor.TID=tutor_images.TID) WHERE tutor.TID = '" . $tutor_id . "'");
+		$result = $mysqli->query("SELECT tutor.TID, tutor.name, tutor.year, tutor.major, tutor.Room_Number, tutor.about_tutor, tutor_images.image_url FROM tutor INNER JOIN tutor_images ON (tutor.TID=tutor_images.TID) WHERE tutor.TID = '" . $tutor_id . "'");
 		$tutor_object = $result->fetch_object("tutor");
 		unset($mysqli);
 		return $tutor_object;
@@ -17,7 +17,7 @@
 	function get_tutors_by_course($course)
 	{
 		$mysqli = getDBCon();
-		$result = $mysqli->query("SELECT DISTINCT tutor.TID, tutor.name, tutor.year, tutor.email, tutor.major, tutor_images.image_url FROM course INNER JOIN (tutor_course INNER JOIN (tutor INNER JOIN tutor_images ON (tutor.TID = tutor_images.TID)) ON (tutor_course.TID=tutor.TID)) ON (course.CID=tutor_course.CID) WHERE course.course_number = '" . $course . "'");
+		$result = $mysqli->query("SELECT DISTINCT tutor.TID, tutor.name, tutor.year, tutor.major, tutor.Room_Number, tutor.about_tutor tutor_images.image_url FROM course INNER JOIN (tutor_course INNER JOIN (tutor INNER JOIN tutor_images ON (tutor.TID = tutor_images.TID)) ON (tutor_course.TID=tutor.TID)) ON (course.CID=tutor_course.CID) WHERE course.course_number = '" . $course . "'");
 		$results_array = array();
 		while($result_obj = $result->fetch_object("tutor"))
 		{
@@ -30,7 +30,7 @@
 	function get_tutors_by_name($name)
 	{
 		$mysqli = getDBCon();
-		$result = $mysqli->query("SELECT tutor.TID, tutor.name, tutor.year, tutor.email, tutor.major, tutor_images.image_url FROM tutor INNER JOIN tutor_images ON ( tutor.TID = tutor_images.TID ) WHERE tutor.name LIKE '" . $name . "%' ORDER BY tutor.name");
+		$result = $mysqli->query("SELECT tutor.TID, tutor.name, tutor.year, tutor.major, tutor.Room_Number, tutor.about_tutor, tutor_images.image_url FROM tutor INNER JOIN tutor_images ON ( tutor.TID = tutor_images.TID ) WHERE tutor.name LIKE '" . $name . "%' ORDER BY tutor.name");
 		$results_array = array();
 		while($result_obj = $result->fetch_object("tutor"))
 		{
@@ -43,7 +43,7 @@
 	function get_tutors_by_major($major)
 	{
 		$mysqli = getDBCon();
-		$result = $mysqli->query("SELECT tutor.TID, tutor.name, tutor.year, tutor.email, tutor.major, tutor_images.image_url FROM tutor INNER JOIN tutor_images ON (tutor.TID = tutor_images.TID) WHERE tutor.major = '" . $major . "'");
+		$result = $mysqli->query("SELECT tutor.TID, tutor.name, tutor.year, tutor.major, tutor_images.image_url FROM tutor INNER JOIN tutor_images ON (tutor.TID = tutor_images.TID) WHERE tutor.major = '" . $major . "'");
 		$results_array = array();
 		while($result_obj = $result->fetch_object("tutor"))
 		{
@@ -56,7 +56,7 @@
 	function get_tutors_by_year($year)
 	{
 		$mysqli = getDBCon();
-		$result = $mysqli->query("SELECT tutor.TID, tutor.name, tutor.year, tutor.email, tutor.major, tutor_images.image_url FROM tutor INNER JOIN tutor_images ON (tutor.TID=tutor_images.TID) WHERE tutor.year = '" . $year . "'");
+		$result = $mysqli->query("SELECT tutor.TID, tutor.name, tutor.year, tutor.major, tutor_images.image_url FROM tutor INNER JOIN tutor_images ON (tutor.TID=tutor_images.TID) WHERE tutor.year = '" . $year . "'");
 		$results_array = array();
 		while($result_obj = $result->fetch_object("tutor"))
 		{
@@ -65,16 +65,7 @@
 		unset($mysqli);
 		return $results_array;
 	}
-	//TODO: rewrite
-	function get_tutor_schedule($tutor_id, $timestamp)
-	{
-		$day = date("l", $timestamp);
-		$date = date("Y-m-d", $timestamp);
-		$timeslots = get_tutor_timeslots($tutor_id, $day);
-		$booked = get_tutor_booked($tutor_id, $date);
-		merge_timeslots($timeslots, $booked);
-		return $timeslots;
-	}
+	
 	
 	function get_tutor_courses_tutored($tutor_id)
 	{
@@ -99,28 +90,54 @@
 	}
 	
 	
-	function get_tutor_booked_timeslots($tutor_uname, $date)
+	function get_tutor_booked_timeslots($tutor_id, $date)
 	{
 		$mysqli = getDBCon();
-		$result = $mysqli->query("SELECT booked_timeslots.TSID, booked_timeslots.tutee_uname FROM booked_timeslots,tutor WHERE tutor.email='" . $tutor_uname ."' AND booked_timeslots.booked_day='" . $date . "'");
+		
+		
+		$result = $mysqli->query("SELECT TSID, tutee_uname  FROM booked_timeslots WHERE TID = '". $tutor_id ."' AND booked_day = '". $date ."'" );
 		
 		unset($mysqli);
 		return $result->fetch_all(MYSQLI_ASSOC);
 	}
+	/* TODO: Fix later
+	function check_if_booked($tutor_id,$timeslot_id,$date)
+	{
+	
+		$mysqli = getDBCon();
+		
+		$result = $mysqli->query("SELECT COUNT(TID) FROM booked_timeslots WHERE TID = '". $tutor_id ."' AND booked_day = '". $date ."' AND TSID = '". $timeslot_id ."'");
+		
+		
+		unset($mysqli);
+		
+		return ;
+	}
+	*/
 	
 	function book_timeslot($tutor_id, $tutee_uname, $timeslot_id,$date)
 	{
 		$mysqli = getDBCon();
 		
+		$check = get_tutor_booked_timeslots($tutor_id,$date);
+
+		if ($check) return NULL;
 		
 		$result = $mysqli->query("INSERT INTO booked_timeslots (TID,TSID, tutee_uname, booked_day) VALUES ('". $tutor_id ."' , '". $timeslot_id ."' , '". $tutee_uname ."', '". $date ."')");
 		
 		unset($mysqli);
-		//return $result->fetch_all(MYSQLI_ASSOC);
-		return $tutorID[0];
+		return $result->fetch_all(MYSQLI_ASSOC);
 		
+	}
+	
+	function unbook_timeslot($tutor_id,$timeslot_id,$date)
+	{
+		$mysqli = getDBCon();
 		
+		$result = $mysqli->query("DELETE FROM booked_timeslots WHERE TID = '". $tutor_id ."' AND TSID = '". $timeslot_id ."' AND booked_day = '". $date ."'");
 		
+		unset($mysqli);
+		return $result->fetch_all(MYSQLI_ASSOC);
 	}
 	
 	

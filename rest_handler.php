@@ -16,16 +16,16 @@
 			$result = get_tutors_by_name($args["LCTutorName"]);
 			break;
 			
+		case "check_if_booked":
+			$result = check_if_booked($args["LCTutorID"],$args["LCTimeslotID"],$args["LCDate"]);
+			break;
+			
 		case "get_tutors_by_course":
 			$result = get_tutors_by_course($args["LCCourse"]);
 			break; 
 			
-		case "get_tutor_schedule":
-			$result = get_tutor_schedule($args['LCTutorID'], $args['LCTimestamp']);
-			break;
-			
 		case "get_tutor_booked_timeslots":
-			$result = get_tutor_booked_timeslots($args['LCTutorUname'], $args['LCDate']);
+			$result = get_tutor_booked_timeslots($args['LCTutorID'], $args['LCDate']);
 			break;
 			
 		case "get_tutor_courses_tutored":
@@ -34,6 +34,10 @@
 			
 		case "book_timeslot":
 			$result = book_timeslot($args['LCTutorID'], $args['LCTuteeUname'],$args['LCTimeslotID'],$args['LCDate']);
+			break;
+			
+		case "unbook_timeslot":
+			$result = unbook_timeslot($args['LCTutorID'],$args['LCTimeslotID'],$args['LCDate']);
 			break;
 			
 		case "authenticate":
