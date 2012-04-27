@@ -12,8 +12,6 @@
 		return $tutor_object;
 	}
 	
-	
-	
 	function get_tutors_by_course($course)
 	{
 		$mysqli = getDBCon();
@@ -66,7 +64,6 @@
 		return $results_array;
 	}
 	
-	
 	function get_tutor_courses_tutored($tutor_id)
 	{
 		$mysqli = getDBCon();
@@ -94,7 +91,6 @@
 	{
 		$mysqli = getDBCon();
 		
-		
 		$result = $mysqli->query("SELECT TSID, tutee_uname  FROM booked_timeslots WHERE TID = '". $tutor_id ."' AND booked_day = '". $date ."'" );
 		
 		unset($mysqli);
@@ -103,15 +99,13 @@
 	/* TODO: Fix later
 	function check_if_booked($tutor_id,$timeslot_id,$date)
 	{
-	
 		$mysqli = getDBCon();
 		
-		$result = $mysqli->query("SELECT COUNT(TID) FROM booked_timeslots WHERE TID = '". $tutor_id ."' AND booked_day = '". $date ."' AND TSID = '". $timeslot_id ."'");
-		
+		$result = $mysqli->query("SELECT TID FROM booked_timeslots WHERE TID = '". $tutor_id ."' AND booked_day = '". $date ."' AND TSID = '". $timeslot_id ."'");
 		
 		unset($mysqli);
 		
-		return ;
+		return $result;
 	}
 	*/
 	
