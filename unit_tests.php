@@ -29,13 +29,10 @@ class TestOfRest extends UnitTestCase {
 		
 		$this->assertEqual($result[0], $expected);
     }
-	
-	
-	
+
 	function testGetTutorCoursesTutored() {
 		$data = json_encode(array("LCTutorID" => "bamberad"));
 		$result = $this->do_post_request("get_tutor_courses_tutored", $data);
-		$this->dump($result);
 		
 		$expected =  array((object) array("department" =>"CSSE", "course_number" => "CSSE371","course_description" => "Software Requirements and Specifications"),(object) array("department" =>"ECE", "course_number" => "ECE130","course_description" => "Introduction to Logic Design"));
 		
@@ -45,12 +42,12 @@ class TestOfRest extends UnitTestCase {
 	function testGetTutorById() {
 		$data = json_encode(array("LCTutorID" => "cundifij"));
 		$result = $this->do_post_request("get_tutor_by_id", $data);
-		$this->dump($result);
 		
 		$expected = (object) array("TID"=>"cundifij","name"=>"Ian Cundiff","year"=>"2013","major"=>"SE","Room_Number"=>"Percopo 104","about_tutor" => "Hi!","image_url"=>"http://lcwebapp.csse.rose-hulman.edu/TutorProfilePics/tutor-pic-3.jpg");
 		
 		$this->assertEqual($result, $expected);
     }
+	
 	/*
 	function testGetTutorSchedule() {
 		$data = json_encode(array("LCTutorID" => bamberad, "LCTimestamp" => time()));
@@ -63,12 +60,9 @@ class TestOfRest extends UnitTestCase {
 	}
 	*/
 	
-	
 	function testGetBookedSlots(){
 		$data = json_encode(array("LCTutorID" => "bamberad", "LCDate" => "2012-02-15"));
 		$result = $this->do_post_request("get_tutor_booked_timeslots", $data);
-		$this->dump($result);
-		
 		
 		$expected = array((object)array("TSID" => 23, "tutee_uname" => "agnerrl"),(object)array("TSID" => 24, "tutee_uname" => "shevicna"));
 		
@@ -79,7 +73,6 @@ class TestOfRest extends UnitTestCase {
 	
 	//TODO: make this mock so it doesn't rely on actual data
 	function testThatFreeSlotCanBeBooked(){
-	
 		$data = json_encode(array("LCTutorID" => "applekw", "LCTuteeUname" => "TEST (DELETE ME)", "LCTimeslotID" => 13, "LCDate" => "2012-02-15"));
 		$tutorinfo= json_encode(array("LCTutorID" => "applekw", "LCDate" => "2012-02-15"));
 		$before = $this->do_post_request("get_tutor_booked_timeslots", $tutorinfo);
@@ -89,14 +82,9 @@ class TestOfRest extends UnitTestCase {
 		$after = $this->do_post_request("get_tutor_booked_timeslots", $tutorinfo);
 		
 		$this->assertNotEqual($before,$after);
-		
-		
-		
-		
 	}
 	
 	function testThatBookedSlotCanBeUnbooked(){
-	
 		$data = json_encode(array("LCTutorID" => "applekw", "LCTimeslotID" => 13, "LCDate" => "2012-02-15"));
 		
 		$tutorinfo= json_encode(array("LCTutorID" => "applekw", "LCDate" => "2012-02-15"));
@@ -108,19 +96,13 @@ class TestOfRest extends UnitTestCase {
 		$after = $this->do_post_request("get_tutor_booked_timeslots", $tutorinfo);
 		
 		$this->assertNotEqual($before,$after); 
-		
-		
-		
 	}
 	
-	
-	/*TODO: Test when implemented
+	/*
 	function testThatBookedSlotIsRecognizedAsBooked(){
 		$data = json_encode(array("LCTutorID" => "bamberad","LCTimeslotID" => 23 ,"LCDate" => "2012-02-15"));
 		$result = $this->do_post_request("check_if_booked", $data);
-		$this->dump($result);
 
-		
 		$this->assertTrue($result);
 	}
 	//TODO: make this mock so it doesn't rely on actual data
@@ -136,16 +118,5 @@ class TestOfRest extends UnitTestCase {
 		$this->assertFalse($result);
 	}
 	*/
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 }
 ?>
