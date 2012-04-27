@@ -11,10 +11,10 @@ if(!isset($tutor)) die("<h3>Invalid Tutor Id</h3>");
   <hr>
   <div class="span-8 colborder append-1">
     <a href="mailto:<?php echo($tutor->email); ?>">
-      <?php echo($tutor->email); ?></a>
+      <?php echo($tutor->TID . "@rose-hulman.edu"); ?></a>
     <br /><br />
-    Room 117, (999) 999-9999<br />
-    Classroom Phone: 6088<br />
+    <?php echo($tutor->Room_Number); ?><br />
+	(999) 999-9999<br />
     
     <b>Tutoring Times:</b><br />
     <b>Classroom:</b><br />
