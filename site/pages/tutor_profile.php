@@ -3,7 +3,6 @@ require_once("../tutor_controller.php");
 if(isset($_GET['tutor_id']))
    $tutor = get_tutor_by_id($_GET['tutor_id']);
 if(!isset($tutor)) die("<h3>Invalid Tutor Id</h3>");
-//var_dump($tutor);
 ?>
 
 <div>
@@ -12,9 +11,8 @@ if(!isset($tutor)) die("<h3>Invalid Tutor Id</h3>");
   <div class="span-8 colborder append-1">
     <a href="mailto:<?php echo($tutor->email); ?>">
       <?php echo($tutor->TID . "@rose-hulman.edu"); ?></a>
-    <br /><br />
-    <?php echo($tutor->Room_Number); ?><br />
-	(999) 999-9999<br />
+    <br />
+    <?php echo($tutor->Room_Number); ?><br /><br />
     
     <b>Tutoring Times:</b><br />
     <b>Classroom:</b><br />
@@ -42,14 +40,24 @@ if(!isset($tutor)) die("<h3>Invalid Tutor Id</h3>");
       <img src="<?php echo($tutor->image_url); ?>" alt="<?php echo($tutor->name); ?> Pic" height="300" width="250" />
     </p>
     <b>Courses I Can Help With:</b><br />
-    <ul>
     <?php
-    foreach(get_tutor_courses_tutored($tutor->TID) as $course) {
-        echo("<li>");
-        var_dump($course);
-        echo("</li>");
+    $deptCourses = array();
+	foreach(get_tutor_courses_tutored($tutor->TID) as $course) {
+		if(array_key_exists($course->department, $deptCourses)) {
+			array_push($deptCourses[$course->department], $course);
+		} else {
+			$deptCourses[$course->department] = array($course);
+		}
     }
+
+	foreach($deptCourses as $dept => $courses) {
+		echo("<b>" . $dept . "</b>");
+		echo("<ul>");
+		foreach($courses as $course) {
+			echo ("<li>" . $course->course_number . ": " . $course->course_description . "</li>");
+		}
+		echo("</ul>");
+	}
     ?>
-    </ul>
   </div>
 </div>

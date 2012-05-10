@@ -123,9 +123,14 @@
 	function get_tutor_courses_tutored($tutor_id)
 	{
 		$mysqli = getDBCon();
-		$result = $mysqli->query("SELECT course.department, course.course_number, course.course_description FROM course INNER JOIN tutor_course ON (course.CID = tutor_course.CID ) WHERE tutor_course.TID = '" . $tutor_id . "'");
+		$result = $mysqli->query("SELECT course.CID, course.department, course.course_number, course.course_description FROM course INNER JOIN tutor_course ON (course.CID = tutor_course.CID ) WHERE tutor_course.TID = '" . $tutor_id . "'");
 		unset($mysqli);
-		return $result->fetch_all(MYSQLI_ASSOC);
+		$results_array = array();
+		while($results_obj = $result->fetch_object('Course'))
+		{
+			array_push($results_array, $results_obj);
+		}
+		return $results_array;
 	}
 	
 	//TODO: rewrite

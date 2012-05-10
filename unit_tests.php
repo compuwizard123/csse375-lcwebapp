@@ -35,7 +35,7 @@ class TestOfRest extends UnitTestCase {
 		$data = json_encode(array("LCTutorID" => "bamberad"));
 		$result = $this->do_post_request("get_tutor_courses_tutored", $data);
 		
-		$expected =  array((object) array("department" =>"CSSE", "course_number" => "CSSE371","course_description" => "Software Requirements and Specifications"),(object) array("department" =>"ECE", "course_number" => "ECE130","course_description" => "Introduction to Logic Design"));
+		$expected =  array((object) array("CID"=>1,"department" =>"CSSE", "course_number" => "CSSE371","course_description" => "Software Requirements and Specifications"),(object) array("CID"=>4,"department" =>"ECE", "course_number" => "ECE130","course_description" => "Introduction to Logic Design"));
 		
 		$this->assertEqual($result, $expected);
     }
