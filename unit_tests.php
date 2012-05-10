@@ -22,13 +22,14 @@ class TestOfRest extends UnitTestCase {
 	}
 	
 	function testGetTutorsByName() {
-		$data = json_encode(array("LCTutorName" => "ian"));
+		$data = json_encode(array("LCTutorName" => "ian", "LCCourseNumber" => ""));
 		$result = $this->do_post_request("get_tutors_by_name", $data);
 		
 		$expected = (object) array("TID"=>"cundifij","name"=>"Ian Cundiff","year"=>2013,"major"=>"SE","Room_Number"=>"Percopo 104","about_tutor"=>"Hi!","image_url"=>"http://lcwebapp.csse.rose-hulman.edu/TutorProfilePics/tutor-pic-3.jpg");
 		
 		$this->assertEqual($result[0], $expected);
     }
+	
 
 	function testGetTutorCoursesTutored() {
 		$data = json_encode(array("LCTutorID" => "bamberad"));
@@ -39,14 +40,89 @@ class TestOfRest extends UnitTestCase {
 		$this->assertEqual($result, $expected);
     }
 	
+	/*
+	function testAddTutorWithCoursesSpecified(){
+		$data = json_encode(array("LCTutorName" => "Gruntilda","LCTutorYear" => "1998","LCTutorID" => "grunty","LCTutorMajor" => "Witchcraft","LCTutorRoomNumber" => "O107","LCTutorBio" => "See http://banjokazooie.wikia.com/wiki/Gruntilda_Winkybunion", "LCCoursesArray" => array('CSSE371','CSSE374')));
+		
+		$tutor_info = json_encode(array("LCTutorID" => "grunty"));
+		
+		$before = $this->do_post_request("get_tutor_by_id", $tutor_info);
+		
+		$result = $this->do_post_request("add_tutor", $data);
+		
+		$after = $this->do_post_request("get_tutor_by_id", $tutor_info);
+		
+		$this->assertNotNull($after);
+		$this->assertNotEqual($before,$after);
+		
+	} */
+	/*
+	function testAddTutorWithNoCoursesSpecified(){
+		$this->fail("Not yet implemented.");
+	}
+	
+	function testAddTutorWithNullBio(){
+		$this->fail("Not yet implemented.");
+	}
+	*/
+	
+	/*
+	function testDeleteTutor(){
+		$data = json_encode(array("LCTutorID" => "grunty"));
+		$before = $this->do_post_request("get_tutor_by_id", $data);
+		
+		$result = $this->do_post_request("delete_tutor", $data);
+		
+		$after = $this->do_post_request("get_tutor_by_id", $data);
+		
+		$this->assertNotEqual($before, $after);
+		$this->assertNull($after);
+	}
+	*/
 	function testGetTutorById() {
 		$data = json_encode(array("LCTutorID" => "cundifij"));
 		$result = $this->do_post_request("get_tutor_by_id", $data);
+		
 		
 		$expected = (object) array("TID"=>"cundifij","name"=>"Ian Cundiff","year"=>"2013","major"=>"SE","Room_Number"=>"Percopo 104","about_tutor" => "Hi!","image_url"=>"http://lcwebapp.csse.rose-hulman.edu/TutorProfilePics/tutor-pic-3.jpg");
 		
 		$this->assertEqual($result, $expected);
     }
+	
+	function testGetCourseByExactCRN(){
+		$data = json_encode(array("LCCourseNumber" => "CSSE371"));
+		$result = $this->do_post_request("get_course_by_crn", $data);
+		
+		$expected = (object) array("CID"=>"1","department"=>"CSSE","course_number"=>"CSSE371","course_description"=>"Software Requirements and Specifications");
+		
+		$this->assertEqual($result, $expected);
+	}
+	
+	function testAddCourseForTutor(){
+		$data = json_encode(array("LCTutorID" => "applekw", "LCCourseID" => 3));
+		$tutorInfo = json_encode(array("LCTutorID" => "applekw"));
+		
+		$before = $this->do_post_request("get_tutor_courses_tutored", $tutorInfo);
+		
+		$result = $this->do_post_request("add_course_for_tutor", $data);
+		
+		$after = $this->do_post_request("get_tutor_courses_tutored", $tutorInfo);
+		
+		$this->assertNotEqual($before, $after);
+	}
+	
+	function testRemoveCourseForTutor(){
+		$data = json_encode(array("LCTutorID" => "applekw", "LCCourseID" => 3));
+		$tutorInfo = json_encode(array("LCTutorID" => "applekw"));
+		
+		$before = $this->do_post_request("get_tutor_courses_tutored", $tutorInfo);
+		
+		$result = $this->do_post_request("remove_course_for_tutor", $data);
+		
+		$after = $this->do_post_request("get_tutor_courses_tutored", $tutorInfo);
+		
+		$this->assertNotEqual($before, $after);
+	}
 	
 	/*
 	function testGetTutorSchedule() {
