@@ -26,10 +26,9 @@
     <hr>
     <div class="span-4 colborder">
       <a href="index.php">Home</a><br />
-      <a href="index.php?page=test">Submit Preferred Schedule</a><br />
+      <a href="index.php?page=test">Test</a><br />
       <a href="index.php?page=tutor_search">Search Tutors</a><br />
       <a href="index.php?page=tutor_profiles">Tutor Profiles</a><br />
-      <a href="index.php?page=upload_document">Upload Document(s)</a><br />
 	  <a href="index.php?page=help">Help</a>
     </div>
     <div class="span-18 last">
