@@ -14,5 +14,5 @@
    <br>
    &nbsp <b>Upload Document(s)</b> - This is currently not implemented.<br>
    <br>
-   &nbsp <b>Help</b> - This is where you are now, it is quite a helpful place.
+   &nbsp <b>Help</b> - This is where you are now.
 </div>
