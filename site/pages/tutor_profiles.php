@@ -5,6 +5,6 @@
 <div>
   <h3>Tutor Profiles</h3>
   <?php
-     display_tutors(get_tutors_by_name(""));
+     display_tutors(get_tutors_by_name("",""));
   ?>
 </div>
