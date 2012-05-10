@@ -1,7 +1,61 @@
 <?php
 	include_once("db_con.php");
 	include_once("tutor.php");
+	include_once("course.php");
 	include_once("tutor_timeslot.php");
+	
+	//NOTE: assumes that the array of courses passed in are already in the 'course' table
+	//      on tutor creation, allowing them to select courses from a list would ensure this
+	//TODO: add support for pictures once their implementation is finalized, fix adding courses
+	function add_tutor($name,$year,$TID,$major,$room_number,$about_tutor, $course_array){
+		
+		$mysqli = getDBCon();
+		$tutor_insertion_result = $mysqli->query("INSERT INTO tutor (name,year, TID, major, Room_Number, about_tutor) VALUES ('". $name ."' , '". $year ."' , '". $TID ."', '". $major ."','" . $room_number . "','" . $about_tutor ."')");
+		
+		
+		/*
+		foreach($course_array as $course){
+			
+			
+			$course_info = get_course_by_crn($course);
+			$course_add_result = add_course_for_tutor($TID,$course_info->CID);
+			
+		}
+		
+		*/
+		unset($mysqli);
+		return $tutor_insertion_result->fetch_all(MYSQLI_ASSOC);
+	}
+	
+	function delete_tutor($TID){
+		$mysqli = getDBCon();
+		$deletion_result = $mysqli->query("DELETE FROM tutor_course, tutor_timeslot, booked_timeslots, tutor WHERE TID = '" . $TID ."')");
+		
+		unset($mysqli);
+		return $deletion_result->fetch_all(MYSQLI_ASSOC);
+	}
+	
+	function add_course_for_tutor($TID,$CID){
+		$mysqli = getDBCon();
+		$result = $mysqli->query("INSERT INTO tutor_course (TID,CID) VALUES ('". $TID . "','" . $CID ."')");
+		unset($mysqli);
+		return $result->fetch_all(MYSQLI_ASSOC);
+	}
+	
+	function remove_course_for_tutor($TID,$CID){
+		$mysqli = getDBCon();
+		$result = $mysqli->query("DELETE FROM tutor_course WHERE TID = '". $TID . "' AND CID = '" . $CID ."'");
+		unset($mysqli);
+		return $result->fetch_all(MYSQLI_ASSOC);
+	}
+	
+	function get_course_by_crn($course_number){
+		$mysqli = getDBCon();
+		$result = $mysqli->query("SELECT CID, department, course_number, course_description FROM course WHERE course_number = '" . $course_number . "'");
+		$course_object = $result->fetch_object("course");
+		unset($mysqli);
+		return $course_object;
+	}
 	
 	function get_tutor_by_id($tutor_id)
 	{
@@ -15,7 +69,7 @@
 	function get_tutors_by_course($course)
 	{
 		$mysqli = getDBCon();
-		$result = $mysqli->query("SELECT DISTINCT tutor.TID, tutor.name, tutor.year, tutor.major, tutor.Room_Number, tutor.about_tutor tutor_images.image_url FROM course INNER JOIN (tutor_course INNER JOIN (tutor INNER JOIN tutor_images ON (tutor.TID = tutor_images.TID)) ON (tutor_course.TID=tutor.TID)) ON (course.CID=tutor_course.CID) WHERE course.course_number = '" . $course . "'");
+		$result = $mysqli->query("SELECT DISTINCT tutor.TID, tutor.name, tutor.year, tutor.major, tutor.Room_Number, tutor.about_tutor tutor_images.image_url FROM course INNER JOIN (tutor_course INNER JOIN (tutor INNER JOIN tutor_images ON (tutor.TID = tutor_images.TID)) ON (tutor_course.TID=tutor.TID)) ON (course.CID=tutor_course.CID) WHERE course.course_number LIKE '" . $course . "'");
 		$results_array = array();
 		while($result_obj = $result->fetch_object("tutor"))
 		{
@@ -25,23 +79,25 @@
 		return $results_array;
 	}
 	
-	function get_tutors_by_name($name)
+	function get_tutors_by_name($name, $course)
 	{
 		$mysqli = getDBCon();
-		$result = $mysqli->query("SELECT tutor.TID, tutor.name, tutor.year, tutor.major, tutor.Room_Number, tutor.about_tutor, tutor_images.image_url FROM tutor INNER JOIN tutor_images ON ( tutor.TID = tutor_images.TID ) WHERE tutor.name LIKE '" . $name . "%' ORDER BY tutor.name");
+		$result = $mysqli->query("SELECT tutor.TID, tutor.name, tutor.year, tutor.major, tutor.Room_Number, tutor.about_tutor, tutor_images.image_url FROM tutor INNER JOIN tutor_images ON ( tutor.TID = tutor_images.TID ) WHERE tutor.name LIKE '%" . $name . "%' ORDER BY tutor.name");
 		$results_array = array();
 		while($result_obj = $result->fetch_object("tutor"))
 		{
 			array_push($results_array, $result_obj);
 		}
+		
 		unset($mysqli);
+		if (!empty($course_id)) array_push($results_array,get_tutors_by_course($course));
 		return $results_array;
 	}
 	
 	function get_tutors_by_major($major)
 	{
 		$mysqli = getDBCon();
-		$result = $mysqli->query("SELECT tutor.TID, tutor.name, tutor.year, tutor.major, tutor_images.image_url FROM tutor INNER JOIN tutor_images ON (tutor.TID = tutor_images.TID) WHERE tutor.major = '" . $major . "'");
+		$result = $mysqli->query("SELECT tutor.TID, tutor.name, tutor.year, tutor.major, tutor_images.image_url FROM tutor INNER JOIN tutor_images ON (tutor.TID = tutor_images.TID) WHERE tutor.major = '%" . $major . "%'");
 		$results_array = array();
 		while($result_obj = $result->fetch_object("tutor"))
 		{
