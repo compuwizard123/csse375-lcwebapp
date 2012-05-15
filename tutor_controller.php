@@ -67,20 +67,6 @@
 		return $result;
 	}
 	
-	function get_course_by_crn($mysqli, $course_number)
-	{
-		$result = $mysqli->query("SELECT CID, department, course_number, course_description FROM course WHERE course_number = '" . $course_number . "'");
-		$course_object = $result->fetch_object("course");
-		return $course_object;
-	}
-	
-	function get_course_by_similar_crn($mysqli, $course_number)
-	{
-		$result = $mysqli->query("SELECT CID, department, course_number, course_description FROM course WHERE course_number LIKE '" . $course_number . "'");
-		$course_object = $result->fetch_object("course");
-		return $course_object;
-	}
-	
 	function get_tutor_by_id($mysqli, $tutor_id)
 	{
 		$result = $mysqli->query("SELECT tutor.TID, tutor.name, tutor.year, tutor.major, tutor.Room_Number, tutor.about_tutor FROM tutor WHERE tutor.TID = '" . $tutor_id . "'");
@@ -122,7 +108,6 @@
 		}
 		
 		return $results_array;
-	
 	}
 	
 	function get_tutors_by_major($mysqli, $major)

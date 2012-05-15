@@ -3,7 +3,6 @@ require_once('simpletest/autorun.php');
 require_once("db_con.php");
 require_once("tutor_controller.php");
 
-
 class TestOfRest extends UnitTestCase {
 	function do_post_request($req, $data, $optional_headers = null)
 	{
@@ -70,95 +69,82 @@ class TestOfRest extends UnitTestCase {
 		$result = $this->do_post_request("add_course", $data);
 		
 		$checkData = json_encode(array("LCCourseNumber" => "CSSE499"));
-		$wasAdded = $this->do_post_request("get_course_by_crn", $checkData);
+		$wasAdded = $this->do_post_request("get_courses_by_crn", $checkData);
 		
 		$this->assertNotNull($wasAdded);
 	}
 	
-	function testRemoveCourse() {
-		$data = json_encode(array("LCCourseNumber" => "CSSE499"));
-		$result = $this->do_post_request("remove_course", $data);
+	function testDeleteCourse() {
+		$mysqli = getDBCon();
+		$result = delete_course($mysqli, "CSSE499");
+	
+		$wasRemoved = get_courses_by_crn($mysqli, "CSSE499");
 		
-		
-		$wasRemoved = $this->do_post_request("get_course_by_crn", $data);
-		
-		$this->assertNull($wasRemoved);
+		$this->assertEqual($wasRemoved, array());
 	}
 	
-	/*tests fail even though the functionality works. correct later?
-	function testAddTutor(){
-		$data = json_encode(array("LCTutorName" => "Gruntilda","LCTutorYear" => "1998","LCTutorID" => "grunty","LCTutorMajor" => "Witchcraft","LCTutorRoomNumber" => "O107","LCTutorBio" => "See http://banjokazooie.wikia.com/wiki/Gruntilda_Winkybunion"));
+	function testAddTutor()
+	{		
+		$mysqli = getDBCon();
+		$before = get_tutor_by_id($mysqli, "grunty");
 		
-		$tutor_info = json_encode(array("LCTutorID" => "grunty"));
+		$result = add_tutor($mysqli, "Gruntilda", 1998, "grunty", "Witchcraft", "O107", "See http://banjokazooie.wikia.com/wiki/Gruntilda_Winkybunion");
 		
-		$before = $this->do_post_request("get_tutor_by_id", $tutor_info);
-		
-		$result = $this->do_post_request("add_tutor", $data);
-		
-		$after = $this->do_post_request("get_tutor_by_id", $tutor_info);
+		$after = get_tutor_by_id($mysqli, "grunty");
 		
 		$this->assertNotEqual($before,$after);
-	} 
-	*/
-	
-	
-	function testDeleteTutor(){
-		$data = json_encode(array("LCTutorID" => "grunty"));
-		$before = $this->do_post_request("get_tutor_by_id", $data);
-		
-		$result = $this->do_post_request("delete_tutor", $data);
-		
-		$after = $this->do_post_request("get_tutor_by_id", $data);
-		
-		$this->assertNotEqual($before, $after);
-		
 	}
 	
+	function testDeleteTutor()
+	{	
+		$mysqli = getDBCon();
+		$before = get_tutor_by_id($mysqli, "grunty");
+		
+		$result = delete_tutor($mysqli, "grunty");
+		
+		$after = get_tutor_by_id($mysqli, "grunty");
+		
+		$this->assertNotEqual($before, $after);
+	}
 	
 	function testGetTutorById()
 	{
 		$data = json_encode(array("LCTutorID" => "cundifij"));
 		$result = $this->do_post_request("get_tutor_by_id", $data);
 		
-		
 		$expected = (object) array("TID"=>"cundifij","name"=>"Ian Cundiff","year"=>"2013","major"=>"SE","Room_Number"=>"Percopo 104","about_tutor" => "Hi!");
 		
 		$this->assertEqual($result, $expected);
     }
 	
-	function testGetCourseByExactCRN()
+	function testGetCourseByCRN()
 	{
 		$data = json_encode(array("LCCourseNumber" => "CSSE371"));
-		$result = $this->do_post_request("get_course_by_crn", $data);
-		
-		$expected = (object) array("CID"=>"1","department"=>"CSSE","course_number"=>"CSSE371","course_description"=>"Software Requirements and Specifications");
+		$result = $this->do_post_request("get_courses_by_crn", $data);
+		$expected = array((object) array("CID"=>"1","department"=>"CSSE","course_number"=>"CSSE371","course_description"=>"Software Requirements and Specifications"));
 		
 		$this->assertEqual($result, $expected);
 	}
 	
 	function testAddCourseForTutor()
-	{
-		$data = json_encode(array("LCTutorID" => "applekw", "LCCourseID" => 3));
-		$tutorInfo = json_encode(array("LCTutorID" => "applekw"));
+	{	
+		$mysqli = getDBCon();
+		$before = get_tutor_courses_tutored($mysqli,"applekw");
 		
-		$before = $this->do_post_request("get_tutor_courses_tutored", $tutorInfo);
+		$result = add_course_for_tutor($mysqli, "applekw", 3);
 		
-		$result = $this->do_post_request("add_course_for_tutor", $data);
-		
-		$after = $this->do_post_request("get_tutor_courses_tutored", $tutorInfo);
+		$after = get_tutor_courses_tutored($mysqli, "applekw");
 		
 		$this->assertNotEqual($before, $after);
 	}
 	
 	function testRemoveCourseForTutor(){
-		$data = json_encode(array("LCTutorID" => "applekw", "LCCourseID" => 3));
-		$tutorInfo = json_encode(array("LCTutorID" => "applekw"));
+		$mysqli = getDBCon();
+		$before = get_tutor_courses_tutored($mysqli,"applekw");
 		
-		$before = $this->do_post_request("get_tutor_courses_tutored", $tutorInfo);
+		$result = remove_course_for_tutor($mysqli, "applekw", 3);
 		
-		$result = $this->do_post_request("remove_course_for_tutor", $data);
-		
-		$after = $this->do_post_request("get_tutor_courses_tutored", $tutorInfo);
+		$after = get_tutor_courses_tutored($mysqli, "applekw");
 		
 		$this->assertNotEqual($before, $after);
 	}
@@ -241,56 +227,48 @@ class TestOfRest extends UnitTestCase {
 	
 	function testAddTimeslotForTutor()
 	{
-		$data = json_encode(array("LCTutorID" => "applekw", "LCTimeslotID" => 18));
-		$tutorInfo = json_encode(array("LCTutorID" => "applekw"));
+		$mysqli = getDBCon();
+		$before = get_tutor_timeslots($mysqli,"applekw");
 		
-		$before = $this->do_post_request("get_tutor_timeslots", $tutorInfo);
+		$result = add_timeslot_for_tutor($mysqli, "applekw", 18);
 		
-		$result = $this->do_post_request("add_timeslot_for_tutor", $data);
-		
-		$after = $this->do_post_request("get_tutor_timeslots", $tutorInfo);
+		$after = get_tutor_timeslots($mysqli, "applekw");
 		
 		$this->assertNotEqual($before, $after);
 	}
 	
 	function testRemoveTimeslotForTutor()
 	{
-		$data = json_encode(array("LCTutorID" => "applekw", "LCTimeslotID" => 18));
-		$tutorInfo = json_encode(array("LCTutorID" => "applekw"));
+		$mysqli = getDBCon();
+		$before = get_tutor_timeslots($mysqli,"applekw");
 		
-		$before = $this->do_post_request("get_tutor_timeslots", $tutorInfo);
+		$result = remove_timeslot_for_tutor($mysqli, "applekw", 18);
 		
-		$result = $this->do_post_request("remove_timeslot_for_tutor", $data);
-		
-		$after = $this->do_post_request("get_tutor_timeslots", $tutorInfo);
+		$after = get_tutor_timeslots($mysqli, "applekw");
 		
 		$this->assertNotEqual($before, $after);
 	}
 	
 	function testAddTimeslotForTutorOnDay()
-	{
-		$data = json_encode(array("LCTutorID" => "applekw", "LCTimeslotID" => 18, "LCDayofweek" => "Monday"));
-		$tutorInfo = json_encode(array("LCTutorID" => "applekw"));
+	{		
+		$mysqli = getDBCon();
+		$before = get_tutor_timeslots($mysqli,"applekw");
 		
-		$before = $this->do_post_request("get_tutor_timeslots", $tutorInfo);
+		$result = add_timeslot_for_tutor_on_day($mysqli, "applekw", 18, "Monday");
 		
-		$result = $this->do_post_request("add_timeslot_for_tutor_on_day", $data);
-	
-		$after = $this->do_post_request("get_tutor_timeslots", $tutorInfo);
+		$after = get_tutor_timeslots($mysqli, "applekw");
 		
 		$this->assertNotEqual($before, $after);
 	}
 	
 	function testRemoveTimeslotForTutorOnDay()
 	{
-		$data = json_encode(array("LCTutorID" => "applekw", "LCTimeslotID" => 18, "LCDayofweek" => "Monday"));
-		$tutorInfo = json_encode(array("LCTutorID" => "applekw"));
+		$mysqli = getDBCon();
+		$before = get_tutor_timeslots($mysqli,"applekw");
 		
-		$before = $this->do_post_request("get_tutor_timeslots", $tutorInfo);
+		$result = remove_timeslot_for_tutor_on_day($mysqli, "applekw", 18, "Monday");
 		
-		$result = $this->do_post_request("remove_timeslot_for_tutor_on_day", $data);
-		
-		$after = $this->do_post_request("get_tutor_timeslots", $tutorInfo);
+		$after = get_tutor_timeslots($mysqli, "applekw");
 		
 		$this->assertNotEqual($before, $after);
 	}

@@ -6,5 +6,9 @@
 		public $department;
 		public $course_number;
 		public $course_description;
+		
+		public function __toString() {
+			return $this->course_number;
+		}
 	}
 ?>

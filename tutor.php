@@ -8,5 +8,9 @@
 		public $major;
 		public $Room_Number;
 		public $about_tutor;
+		
+		public function __toString() {
+			return $this->TID;
+		}
 	}
 ?>
