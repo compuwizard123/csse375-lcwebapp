@@ -31,4 +31,35 @@ function display_edit_tutor($tutor) {
 	<tr><td colspan=\"2\" style=\"text-align:center\"><input type=\"submit\" value=\"Save\" /></td></tr>
 	");
 }
+
+function display_courses_admin($courses) {
+	if($courses) {
+		echo("<table>");
+		foreach($courses as $course) {
+			echo("<form method=\"POST\" action=\"index.php?page=save_course\"");
+			echo("<tr>");
+			echo("<td><a href=\"index.php?page=edit_course&amp;course_id=" . $course->CID . "\">Edit</a></td>");
+			echo("<td>" . $course->course_number . "</td>");
+			echo("<td>" . $course->course_description . "</td>");
+			echo("<input type=\"hidden\" name=\"course_id\" value=\"" . $course->CID . "\" />");
+			echo("<input type=\"hidden\" name=\"type\" value=\"delete\" />");
+			echo("<td><input type=\"submit\" value=\"Delete\" /></td>");
+			echo("</tr>");
+			echo("</form>");
+		}
+		echo("</table>");
+	} else {
+		echo("No results found.");
+	}
+}
+
+function display_edit_course($course) {
+	echo("
+	<input type=\"hidden\" name=\"course_id\" value=\"" . $course->CID . "\" />
+	<tr><td>Course Number:</td><td><input type=\"text\" name=\"course_number\" value=\"" . $course->course_number . "\" /></td></tr>
+	<tr><td>Course Description:</td><td><input type=\"text\" name=\"description\" value=\"" . $course->course_description . "\" /></td></tr>
+	<tr><td>Department:</td><td><input type=\"text\" name=\"department\" value=\"" . $course->department . "\" /></td></tr>
+	<tr><td colspan=\"2\" style=\"text-align:center\"><input type=\"submit\" value=\"Save\" /></td></tr>
+	");
+}
 ?>

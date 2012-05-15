@@ -1,6 +1,6 @@
 <?php
 require_once("../../tutor_controller.php");
-require_once("display_tutors_admin.php");
+require_once("display_admin.php");
 $tutor = new Tutor();
 ?>
 <div>

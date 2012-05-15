@@ -31,8 +31,8 @@ $mysqli = getDBCon();
     <hr>
     <div class="span-4 colborder">
       <a href="index.php">Home</a><br />
-	  <a href="index.php?page=tutors">List Tutors</a><br />
-	  <a href="index.php?page=add_tutor">Add Tutor</a><br />
+	  <a href="index.php?page=tutors">Tutors</a><br />
+	  <a href="index.php?page=courses">Courses</a><br />
 	  <a href="index.php?page=help">Help</a>
     </div>
     <div class="span-18 last">
