@@ -1,7 +1,7 @@
 <?php
 require_once("../tutor_controller.php");
 if(isset($_GET['tutor_id']))
-   $tutor = get_tutor_by_id($_GET['tutor_id']);
+   $tutor = get_tutor_by_id(getDBCon(),$_GET['tutor_id']);
 if(!isset($tutor)) die("<h3>Invalid Tutor Id</h3>");
 ?>
 
@@ -37,12 +37,12 @@ if(!isset($tutor)) die("<h3>Invalid Tutor Id</h3>");
   </div>
   <div class="span-8 last">
     <p>
-      <img src="<?php echo($tutor->image_url); ?>" alt="<?php echo($tutor->name); ?> Pic" height="300" width="250" />
+      <img src="../tutor_pics/<?php echo($tutor->TID);?>.jpg" alt="<?php echo($tutor->name); ?> Pic" height="300" width="250" />
     </p>
     <b>Courses I Can Help With:</b><br />
     <?php
     $deptCourses = array();
-	foreach(get_tutor_courses_tutored($tutor->TID) as $course) {
+	foreach(get_tutor_courses_tutored($mysqli,$tutor->TID) as $course) {
 		if(array_key_exists($course->department, $deptCourses)) {
 			array_push($deptCourses[$course->department], $course);
 		} else {

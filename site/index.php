@@ -1,3 +1,8 @@
+<?php
+require_once('../db_con.php');
+$mysqli = getDBCon();
+?>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
    "http://www.w3.org/TR/html4/strict.dtd">
 
@@ -26,7 +31,6 @@
     <hr>
     <div class="span-4 colborder">
       <a href="index.php">Home</a><br />
-      <a href="index.php?page=test">Test</a><br />
       <a href="index.php?page=tutor_search">Search Tutors</a><br />
       <a href="index.php?page=tutor_profiles">Tutor Profiles</a><br />
 	  <a href="index.php?page=help">Help</a>
