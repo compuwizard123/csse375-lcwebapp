@@ -1,6 +1,6 @@
 RewriteEngine On
 
-RewriteCond %{REQUEST_URI} !\.(html|php|css|js|gif|png|jpe?g)$
+RewriteCond %{REQUEST_URI} !admin/|site/|\.(html|php|css|js|gif|png|jpe?g)$
 RewriteRule (.*)$ /rest_handler.php [L]
 
 SetEnv TZ America/Indianapolis
