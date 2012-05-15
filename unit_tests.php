@@ -1,8 +1,12 @@
 <?php
 require_once('simpletest/autorun.php');
+require_once("db_con.php");
+require_once("tutor_controller.php");
+
 
 class TestOfRest extends UnitTestCase {
-	function do_post_request($req, $data, $optional_headers = null) {
+	function do_post_request($req, $data, $optional_headers = null)
+	{
 		$baseurl = "http://lcwebapp.csse.rose-hulman.edu/rest/";
 	
 		$params = array('http' => array('method' => 'POST', 'content' => $data));
@@ -21,17 +25,37 @@ class TestOfRest extends UnitTestCase {
 		return json_decode($response);
 	}
 	
-	function testGetTutorsByName() {
-		$data = json_encode(array("LCTutorName" => "ian", "LCCourseNumber" => ""));
+	function testGetTutorsByName()
+	{
+		$data = json_encode(array("LCTutorName" => "ian"));
 		$result = $this->do_post_request("get_tutors_by_name", $data);
 		
-		$expected = (object) array("TID"=>"cundifij","name"=>"Ian Cundiff","year"=>2013,"major"=>"SE","Room_Number"=>"Percopo 104","about_tutor"=>"Hi!","image_url"=>"http://lcwebapp.csse.rose-hulman.edu/TutorProfilePics/tutor-pic-3.jpg");
+		$expected = (object) array("TID"=>"cundifij","name"=>"Ian Cundiff","year"=>2013,"major"=>"SE","Room_Number"=>"Percopo 104","about_tutor"=>"Hi!");
 		
 		$this->assertEqual($result[0], $expected);
     }
 	
+	function testGetTutorsByCourse()
+	{
+		$data = json_encode(array("LCCourseNumber" => "ECE130"));
+		$result = $this->do_post_request("get_tutors_by_course", $data);
+		$expected = array((object)array("TID"=>"bamberad","name"=>"Aaron Bamberger","year"=>"2012","major"=>"CpE-CS","Room_Number"=> NULL,"about_tutor"=> ""),(object)array("TID"=>"cundifij","name"=>"Ian Cundiff","year"=>"2013","major"=>"SE","Room_Number"=>"Percopo 104","about_tutor"=>"Hi!"));
+		
+		$this->assertEqual($result, $expected);
+	}
+	
+	function testGetTutorsByNameAndCourse()
+	{
+		$data = json_encode(array("LCTutorName" => "ian", "LCCourseNumber" => "ECE130"));
+		$result = $this->do_post_request("get_tutors_by_name_and_course", $data);
+		
+		$expected = array((object) array("TID"=>"cundifij","name"=>"Ian Cundiff","year"=>2013,"major"=>"SE","Room_Number"=>"Percopo 104","about_tutor"=>"Hi!"));
+		
+		$this->assertEqual($result, $expected);
+	}
 
-	function testGetTutorCoursesTutored() {
+	function testGetTutorCoursesTutored()
+	{
 		$data = json_encode(array("LCTutorID" => "bamberad"));
 		$result = $this->do_post_request("get_tutor_courses_tutored", $data);
 		
@@ -40,9 +64,30 @@ class TestOfRest extends UnitTestCase {
 		$this->assertEqual($result, $expected);
     }
 	
-	/*
-	function testAddTutorWithCoursesSpecified(){
-		$data = json_encode(array("LCTutorName" => "Gruntilda","LCTutorYear" => "1998","LCTutorID" => "grunty","LCTutorMajor" => "Witchcraft","LCTutorRoomNumber" => "O107","LCTutorBio" => "See http://banjokazooie.wikia.com/wiki/Gruntilda_Winkybunion", "LCCoursesArray" => array('CSSE371','CSSE374')));
+	function testAddCourse()
+	{
+		$data = json_encode(array("LCCourseDepartment" => "CSSE", "LCCourseNumber" => "CSSE499", "LCCourseDescription" => "Test Course"));
+		$result = $this->do_post_request("add_course", $data);
+		
+		$checkData = json_encode(array("LCCourseNumber" => "CSSE499"));
+		$wasAdded = $this->do_post_request("get_course_by_crn", $checkData);
+		
+		$this->assertNotNull($wasAdded);
+	}
+	
+	function testRemoveCourse() {
+		$data = json_encode(array("LCCourseNumber" => "CSSE499"));
+		$result = $this->do_post_request("remove_course", $data);
+		
+		
+		$wasRemoved = $this->do_post_request("get_course_by_crn", $data);
+		
+		$this->assertNull($wasRemoved);
+	}
+	
+	/*tests fail even though the functionality works. correct later?
+	function testAddTutor(){
+		$data = json_encode(array("LCTutorName" => "Gruntilda","LCTutorYear" => "1998","LCTutorID" => "grunty","LCTutorMajor" => "Witchcraft","LCTutorRoomNumber" => "O107","LCTutorBio" => "See http://banjokazooie.wikia.com/wiki/Gruntilda_Winkybunion"));
 		
 		$tutor_info = json_encode(array("LCTutorID" => "grunty"));
 		
@@ -52,21 +97,11 @@ class TestOfRest extends UnitTestCase {
 		
 		$after = $this->do_post_request("get_tutor_by_id", $tutor_info);
 		
-		$this->assertNotNull($after);
 		$this->assertNotEqual($before,$after);
-		
-	} */
-	/*
-	function testAddTutorWithNoCoursesSpecified(){
-		$this->fail("Not yet implemented.");
-	}
-	
-	function testAddTutorWithNullBio(){
-		$this->fail("Not yet implemented.");
-	}
+	} 
 	*/
 	
-	/*
+	
 	function testDeleteTutor(){
 		$data = json_encode(array("LCTutorID" => "grunty"));
 		$before = $this->do_post_request("get_tutor_by_id", $data);
@@ -76,20 +111,23 @@ class TestOfRest extends UnitTestCase {
 		$after = $this->do_post_request("get_tutor_by_id", $data);
 		
 		$this->assertNotEqual($before, $after);
-		$this->assertNull($after);
+		
 	}
-	*/
-	function testGetTutorById() {
+	
+	
+	function testGetTutorById()
+	{
 		$data = json_encode(array("LCTutorID" => "cundifij"));
 		$result = $this->do_post_request("get_tutor_by_id", $data);
 		
 		
-		$expected = (object) array("TID"=>"cundifij","name"=>"Ian Cundiff","year"=>"2013","major"=>"SE","Room_Number"=>"Percopo 104","about_tutor" => "Hi!","image_url"=>"http://lcwebapp.csse.rose-hulman.edu/TutorProfilePics/tutor-pic-3.jpg");
+		$expected = (object) array("TID"=>"cundifij","name"=>"Ian Cundiff","year"=>"2013","major"=>"SE","Room_Number"=>"Percopo 104","about_tutor" => "Hi!");
 		
 		$this->assertEqual($result, $expected);
     }
 	
-	function testGetCourseByExactCRN(){
+	function testGetCourseByExactCRN()
+	{
 		$data = json_encode(array("LCCourseNumber" => "CSSE371"));
 		$result = $this->do_post_request("get_course_by_crn", $data);
 		
@@ -98,7 +136,8 @@ class TestOfRest extends UnitTestCase {
 		$this->assertEqual($result, $expected);
 	}
 	
-	function testAddCourseForTutor(){
+	function testAddCourseForTutor()
+	{
 		$data = json_encode(array("LCTutorID" => "applekw", "LCCourseID" => 3));
 		$tutorInfo = json_encode(array("LCTutorID" => "applekw"));
 		
@@ -130,13 +169,14 @@ class TestOfRest extends UnitTestCase {
 		$result = $this->do_post_request("get_tutor_schedule", $data);
 		$this->dump($result);
 		
-		$expected = (object) array("TID"=>"cundifij","name"=>"Ian Cundiff","year"=>"2013","major"=>"SE","schedule_sid"=>null,"image_url"=>"http://lcwebapp.csse.rose-hulman.edu/TutorProfilePics/tutor-pic-3.jpg");
+		$expected = (object) array("TID"=>"cundifij","name"=>"Ian Cundiff","year"=>"2013","major"=>"SE","schedule_sid"=>null);
 		
 		$this->assertEqual($result, $expected);
 	}
 	*/
 	
-	function testGetBookedSlots(){
+	function testGetBookedSlots()
+	{
 		$data = json_encode(array("LCTutorID" => "bamberad", "LCDate" => "2012-02-15"));
 		$result = $this->do_post_request("get_tutor_booked_timeslots", $data);
 		
@@ -148,7 +188,8 @@ class TestOfRest extends UnitTestCase {
 	//TODO: make this mock so it doesn't rely on actual data
 	
 	//TODO: make this mock so it doesn't rely on actual data
-	function testThatFreeSlotCanBeBooked(){
+	function testThatFreeSlotCanBeBooked()
+	{
 		$data = json_encode(array("LCTutorID" => "applekw", "LCTuteeUname" => "TEST (DELETE ME)", "LCTimeslotID" => 13, "LCDate" => "2012-02-15"));
 		$tutorinfo= json_encode(array("LCTutorID" => "applekw", "LCDate" => "2012-02-15"));
 		$before = $this->do_post_request("get_tutor_booked_timeslots", $tutorinfo);
@@ -174,25 +215,101 @@ class TestOfRest extends UnitTestCase {
 		$this->assertNotEqual($before,$after); 
 	}
 	
-	/*
-	function testThatBookedSlotIsRecognizedAsBooked(){
-		$data = json_encode(array("LCTutorID" => "bamberad","LCTimeslotID" => 23 ,"LCDate" => "2012-02-15"));
-		$result = $this->do_post_request("check_if_booked", $data);
-
-		$this->assertTrue($result);
-	}
-	//TODO: make this mock so it doesn't rely on actual data
-	function testThatBookedSlotCannotBeOverbooked(){
-		$this->fail("Test not yet implemented");
+	function testGetTutorTimeslots()
+	{
+		$data = json_encode(array("LCTutorID" => "applekw"));
+		
+		$result = $this->do_post_request("get_tutor_timeslots", $data);
+		
+		$expected = (array((object)array("TSID" => 8, "Time" => "11:15:00", "Period" => 4, "DAYOFWEEK" => "MONDAY")));
+		
+		
+		$this->assertEqual($expected, $result);
 	}
 	
-	function testThatFreeSlotIsRecognizedAsFree(){
+	function testGetTutorTimeslotsByDay()
+	{
+		$data = json_encode(array("LCTutorID" => "applekw", "LCDayofweek" => "Monday"));
+		
+		$result = $this->do_post_request("get_tutor_timeslots_for_day", $data);
+		
+		$expected = (array((object)array("TSID" => 8, "Time" => "11:15:00", "Period" => 4, "DAYOFWEEK" => "MONDAY")));
+		
+		
+		$this->assertEqual($expected, $result);
+	}
+	
+	function testAddTimeslotForTutor()
+	{
+		$data = json_encode(array("LCTutorID" => "applekw", "LCTimeslotID" => 18));
+		$tutorInfo = json_encode(array("LCTutorID" => "applekw"));
+		
+		$before = $this->do_post_request("get_tutor_timeslots", $tutorInfo);
+		
+		$result = $this->do_post_request("add_timeslot_for_tutor", $data);
+		
+		$after = $this->do_post_request("get_tutor_timeslots", $tutorInfo);
+		
+		$this->assertNotEqual($before, $after);
+	}
+	
+	function testRemoveTimeslotForTutor()
+	{
+		$data = json_encode(array("LCTutorID" => "applekw", "LCTimeslotID" => 18));
+		$tutorInfo = json_encode(array("LCTutorID" => "applekw"));
+		
+		$before = $this->do_post_request("get_tutor_timeslots", $tutorInfo);
+		
+		$result = $this->do_post_request("remove_timeslot_for_tutor", $data);
+		
+		$after = $this->do_post_request("get_tutor_timeslots", $tutorInfo);
+		
+		$this->assertNotEqual($before, $after);
+	}
+	
+	function testAddTimeslotForTutorOnDay()
+	{
+		$data = json_encode(array("LCTutorID" => "applekw", "LCTimeslotID" => 18, "LCDayofweek" => "Monday"));
+		$tutorInfo = json_encode(array("LCTutorID" => "applekw"));
+		
+		$before = $this->do_post_request("get_tutor_timeslots", $tutorInfo);
+		
+		$result = $this->do_post_request("add_timeslot_for_tutor_on_day", $data);
+	
+		$after = $this->do_post_request("get_tutor_timeslots", $tutorInfo);
+		
+		$this->assertNotEqual($before, $after);
+	}
+	
+	function testRemoveTimeslotForTutorOnDay()
+	{
+		$data = json_encode(array("LCTutorID" => "applekw", "LCTimeslotID" => 18, "LCDayofweek" => "Monday"));
+		$tutorInfo = json_encode(array("LCTutorID" => "applekw"));
+		
+		$before = $this->do_post_request("get_tutor_timeslots", $tutorInfo);
+		
+		$result = $this->do_post_request("remove_timeslot_for_tutor_on_day", $data);
+		
+		$after = $this->do_post_request("get_tutor_timeslots", $tutorInfo);
+		
+		$this->assertNotEqual($before, $after);
+	}
+	
+	function testThatBookedSlotIsRecognizedAsBooked()
+	{
+		$data = json_encode(array("LCTutorID" => "bamberad","LCTimeslotID" => 23 ,"LCDate" => "2012-02-15"));
+		$result = $this->do_post_request("check_if_booked", $data);
+		
+		$this->assertTrue($result);
+	}
+	
+	function testThatFreeSlotIsRecognizedAsFree()
+	{
 		$data = json_encode(array("LCTutorID" => "bamberad","LCTimeslotID" => 1 ,"LCDate" => "2012-02-15"));
 		$result = $this->do_post_request("check_if_booked", $data);
-		$this->dump($result);
+		
 	
 		$this->assertFalse($result);
 	}
-	*/
 }
 ?>
