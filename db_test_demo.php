@@ -13,11 +13,11 @@ class TestQueries extends UnitTestCase
 	function setUp() {
 	
         $this->mysqli = getTestDBCon();
-		//$this->mysqli->autocommit(false);
+		$this->mysqli->autocommit(false);
     }
 	
 	function tearDown() {
-      //$this->mysqli->rollback();
+      $this->mysqli->rollback();
     }
 	
 	
@@ -38,11 +38,11 @@ class TestQueries extends UnitTestCase
 		//$check = check_if_booked($this->mysqli,"applekw",23,"2012-05-15");
 		//$this->assertFalse($check);
 		
-		/*
+		
 		unbook_timeslot($this->mysqli, "bamberad",23,"2012-02-15");
 		$check = check_if_booked($this->mysqli,"bamberad",23,"2012-02-15");
 		$this->assertFalse($check);
-		//*/
+		
 		
 	}
 	
