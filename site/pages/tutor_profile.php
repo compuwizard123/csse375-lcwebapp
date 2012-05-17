@@ -9,20 +9,30 @@ if(!isset($tutor)) die("<h3>Invalid Tutor Id</h3>");
   <h3><?php echo($tutor->name) ?> (<?php echo($tutor->major); ?>)</h3>
   <hr>
   <div class="span-8 colborder append-1">
-    <a href="mailto:<?php echo($tutor->email); ?>">
+    <a href="mailto:<?php echo($tutor->TID . "@rose-hulman.edu"); ?>">
       <?php echo($tutor->TID . "@rose-hulman.edu"); ?></a>
     <br />
     <?php echo($tutor->Room_Number); ?><br /><br />
     
-    <b>Tutoring Times:</b><br />
-    <b>Classroom:</b><br />
+    <b>Tutoring Times:</b><br />	
+	<table>
+	<tr><td>Time</td><td>Period</td><td>Day</td></tr>
+	<?php
+	$timeslots = get_tutor_timeslots($mysqli, $tutor->TID);
+	foreach($timeslots as $timeslot) {
+		echo("<tr><td>" . $timeslot->Time . "</td><td>" . $timeslot->Period . "</td><td>" . $timeslot->DAYOFWEEK . "</td></tr>");
+	}
+	?>
+	</table>
+    
+	<b>Classroom:</b><br />
     Sunday: 8-11pm<br />
     Thursday: 8-11pm<br />
     
     <b>Learning Center:</b><br />
     Monday: 4th hour<br />
     Tuesday: 4th hour<br />
-    
+	
     <b>Office Hours:</b><br />
     <p>You're welcome to come on in and ask a question or just sit and
       visit.</p>
@@ -51,12 +61,12 @@ if(!isset($tutor)) die("<h3>Invalid Tutor Id</h3>");
     }
 
 	foreach($deptCourses as $dept => $courses) {
-		echo("<b>" . $dept . "</b>");
-		echo("<ul>");
+		echo("<dl>");
+		echo("<dt>" . $dept . "</dt>");
 		foreach($courses as $course) {
-			echo ("<li>" . $course->course_number . ": " . $course->course_description . "</li>");
+			echo ("<dd>" . $course->course_number . ": " . $course->course_description . "</dt>");
 		}
-		echo("</ul>");
+		echo("</dl>");
 	}
     ?>
   </div>
