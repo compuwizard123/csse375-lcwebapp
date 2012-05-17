@@ -28,20 +28,16 @@ if(!isset($tutor)) die("<h3>Invalid Tutor Id</h3>");
 	foreach($dayTimeslots as $day => $timeslots) {
 		echo("<dt>" . ucfirst(strtolower($day)) . "</dt>");
 		foreach($timeslots as $timeslot) {
-			echo("<dd>" . $timeslot->Period . " - " . $timeslot->Time . "</dd>");
+			if(!is_numeric($timeslot->Period)) {
+				echo("<dd>" . strtolower(strftime("%I:%M pm", strtotime($timeslot->Time))) . "</dd>");
+			} else {
+				echo("<dd>" . $timeslot->Period . "th hour</dd>");
+			}
 		}
 	}
 	echo("</dl>");
 	?>
-    
-	<b>Classroom:</b><br />
-    Sunday: 8-11pm<br />
-    Thursday: 8-11pm<br />
-    <br />
-    <b>Learning Center:</b><br />
-    Monday: 4th hour<br />
-    Tuesday: 4th hour<br />
-    <br />
+
     <b>What I can help you with:</b><br />
     <ul>
       <li>Any course in the list on the right</li>
