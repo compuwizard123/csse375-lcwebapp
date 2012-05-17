@@ -9,16 +9,12 @@
 	//TODO: add support for pictures once their implementation is finalized, fix adding courses
 	function add_tutor($mysqli, $name,$year,$TID,$major,$room_number,$about_tutor)
 	{
-		$result = $mysqli->query("INSERT INTO tutor (name,year, TID, major, Room_Number, about_tutor) VALUES ('". $name ."' , '". $year ."' , '". $TID ."', '". $major ."','" . $room_number . "','" . $about_tutor ."')");
-		
-		return $result;
+		return $mysqli->query("INSERT INTO tutor (name,year, TID, major, Room_Number, about_tutor) VALUES ('". $name ."' , '". $year ."' , '". $TID ."', '". $major ."','" . $room_number . "','" . $about_tutor ."')");
 	}
 	
 	function update_tutor($mysqli, $name, $year, $TID, $major, $room_number, $about_tutor)
 	{
-		$result = $mysqli->query("UPDATE tutor SET name = '" . $name . "', year = '" . $year . "', major = '" . $major . "', Room_Number = '" . $room_number . "', about_tutor = '" . $about_tutor . "' WHERE TID = '" . $TID ."'");
-		
-		return $result;
+		return $mysqli->query("UPDATE tutor SET name = '" . $name . "', year = '" . $year . "', major = '" . $major . "', Room_Number = '" . $room_number . "', about_tutor = '" . $about_tutor . "' WHERE TID = '" . $TID ."'");
 	}
 	
 	function delete_tutor($mysqli, $TID)
@@ -33,38 +29,32 @@
 	
 	function add_course_for_tutor($mysqli, $TID,$CID)
 	{
-		$result = $mysqli->query("INSERT INTO tutor_course (TID,CID) VALUES ('". $TID . "','" . $CID ."')");
-		return $result;
+		return $mysqli->query("INSERT INTO tutor_course (TID,CID) VALUES ('". $TID . "','" . $CID ."')");
 	}
 	
 	function remove_course_for_tutor($mysqli, $TID,$CID)
 	{
-		$result = $mysqli->query("DELETE FROM tutor_course WHERE TID = '". $TID . "' AND CID = '" . $CID ."'");
-		return $result;
+		return $mysqli->query("DELETE FROM tutor_course WHERE TID = '". $TID . "' AND CID = '" . $CID ."'");
 	}
 	
 	function add_timeslot_for_tutor($mysqli, $TID, $TSID)
 	{
-		$result = $mysqli->query("INSERT INTO tutor_timeslot (TID,TSID) VALUES ('". $TID . "','" . $TSID ."')");
-		return $result;
+		return $mysqli->query("INSERT INTO tutor_timeslot (TID,TSID) VALUES ('". $TID . "','" . $TSID ."')");
 	}
 	
 	function remove_timeslot_for_tutor($mysqli, $TID, $TSID)
 	{
-		$result = $mysqli->query("DELETE FROM tutor_timeslot WHERE TID = '". $TID . "' AND TSID = '" . $TSID ."'");
-		return $result;
+		return $mysqli->query("DELETE FROM tutor_timeslot WHERE TID = '". $TID . "' AND TSID = '" . $TSID ."'");
 	}
 	
 	function add_timeslot_for_tutor_on_day($mysqli, $TID, $TSID, $dayofweek)
 	{
-		$result = $mysqli->query("INSERT INTO tutor_timeslot (TID,TSID, DAYOFWEEK) VALUES ('". $TID . "','" . $TSID ."','" . $dayofweek . "')");
-		return $result;
+		return $mysqli->query("INSERT INTO tutor_timeslot (TID,TSID, DAYOFWEEK) VALUES ('". $TID . "','" . $TSID ."','" . $dayofweek . "')");
 	}
 	
 	function remove_timeslot_for_tutor_on_day($mysqli, $TID, $TSID, $dayofweek)
 	{
-		$result = $mysqli->query("DELETE FROM tutor_timeslot WHERE TID = '". $TID . "' AND TSID = '" . $TSID ."' AND DAYOFWEEK = '" . strtoUpper($dayofweek) ."'");
-		return $result;
+		return $mysqli->query("DELETE FROM tutor_timeslot WHERE TID = '". $TID . "' AND TSID = '" . $TSID ."' AND DAYOFWEEK = '" . strtoUpper($dayofweek) ."'");
 	}
 	
 	function get_tutor_by_id($mysqli, $tutor_id)
