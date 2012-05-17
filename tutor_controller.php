@@ -181,9 +181,7 @@
 
 	function unbook_timeslot($mysqli, $tutor_id,$timeslot_id,$date)
 	{	
-		$result = $mysqli->query("DELETE FROM booked_timeslots WHERE TID = '". $tutor_id ."' AND TSID = '". $timeslot_id ."' AND booked_day = '". $date ."'");
-		
-		return $result;
+		return $mysqli->query("DELETE FROM booked_timeslots WHERE TID = '". $tutor_id ."' AND TSID = '". $timeslot_id ."' AND booked_day = '". $date ."'");
 	}
 	
 	//TODO: rewrite?
