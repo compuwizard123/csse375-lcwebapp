@@ -15,28 +15,33 @@ if(!isset($tutor)) die("<h3>Invalid Tutor Id</h3>");
     <?php echo($tutor->Room_Number); ?><br /><br />
     
     <b>Tutoring Times:</b><br />	
-	<table>
-	<tr><td>Time</td><td>Period</td><td>Day</td></tr>
 	<?php
-	$timeslots = get_tutor_timeslots($mysqli, $tutor->TID);
-	foreach($timeslots as $timeslot) {
-		echo("<tr><td>" . $timeslot->Time . "</td><td>" . $timeslot->Period . "</td><td>" . $timeslot->DAYOFWEEK . "</td></tr>");
+	$dayTimeslots = array();
+	foreach(get_tutor_timeslots($mysqli, $tutor->TID) as $timeslot) {
+		if(array_key_exists($timeslot->DAYOFWEEK, $dayTimeslots)) {
+			array_push($dayTimeslots[$timeslot->DAYOFWEEK], $timeslot);
+		} else {
+			$dayTimeslots[$timeslot->DAYOFWEEK] = array($timeslot);
+		}
+    }
+	echo("<dl>");
+	foreach($dayTimeslots as $day => $timeslots) {
+		echo("<dt>" . ucfirst(strtolower($day)) . "</dt>");
+		foreach($timeslots as $timeslot) {
+			echo("<dd>" . $timeslot->Period . " - " . $timeslot->Time . "</dd>");
+		}
 	}
+	echo("</dl>");
 	?>
-	</table>
     
 	<b>Classroom:</b><br />
     Sunday: 8-11pm<br />
     Thursday: 8-11pm<br />
-    
+    <br />
     <b>Learning Center:</b><br />
     Monday: 4th hour<br />
     Tuesday: 4th hour<br />
-	
-    <b>Office Hours:</b><br />
-    <p>You're welcome to come on in and ask a question or just sit and
-      visit.</p>
-    
+    <br />
     <b>What I can help you with:</b><br />
     <ul>
       <li>Any course in the list on the right</li>
