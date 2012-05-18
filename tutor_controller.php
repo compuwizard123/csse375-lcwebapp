@@ -144,7 +144,7 @@
 	
 	function get_tutor_timeslots($mysqli, $tutor_id)
 	{
-		$result = $mysqli->query("SELECT timeslot.TSID, timeslot.Time,timeslot.Period, tutor_timeslot.DAYOFWEEK FROM (timeslot INNER JOIN (tutor INNER JOIN tutor_timeslot ON tutor.TID = tutor_timeslot.TID) ON (timeslot.TSID =tutor_timeslot.TSID)) WHERE tutor.TID = '" . $mysqli->real_escape_string($tutor_id) . "'");
+		$result = $mysqli->query("SELECT timeslot.TSID, timeslot.Time,timeslot.Period, tutor_timeslot.DAYOFWEEK FROM (timeslot INNER JOIN (tutor INNER JOIN tutor_timeslot ON tutor.TID = tutor_timeslot.TID) ON (timeslot.TSID =tutor_timeslot.TSID)) WHERE tutor.TID = '" . $mysqli->real_escape_string($tutor_id) . "' ORDER BY tutor_timeslot.DAYOFWEEK, timeslot.Period, timeslot.Time");
 		$results_array = array();
 		while($results_obj = $result->fetch_object('TutorTimeslot'))
 		{
